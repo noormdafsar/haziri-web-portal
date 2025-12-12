@@ -1,0 +1,280 @@
+<!-- src/app/pages/leave-request-details/leave-request-details.html -->
+<div class="space-y-6">
+  <div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-14 h-14 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center mr-3">
+        <i class="fas fa-calendar-alt text-slate-600 dark:text-slate-400 text-2xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Leave Requests</h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          Viewing all leave requests
+        </p>
+      </div>
+    </div>
+    <div>
+      <button (click)="downloadExcel()" [disabled]="isDownloading() || isLoading() || leaveRequests().length === 0"
+        class="px-3 py-1.5 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors duration-200 flex items-center text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+        @if(isDownloading()){
+        <i class="fas fa-spinner fa-spin mr-2"></i> Downloading...
+        } @else {
+        <i class="fas fa-file-excel mr-2"></i> Export to Excel
+        }
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 lg:p-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+      <!-- Search Input -->
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <i class="fas fa-search text-gray-400"></i>
+        </div>
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)"
+          placeholder="Search by name, reason..."
+          class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white" />
+      </div>
+
+      <!-- Status Filter -->
+      <div>
+        <select [ngModel]="selectedStatus()" (ngModelChange)="selectedStatus.set($event)"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+          <option value="">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="flex items-center gap-2 lg:col-span-2">
+        <input type="date" [ngModel]="selectedStartDate()" (ngModelChange)="selectedStartDate.set($event)"
+          placeholder="From Date" [max]="maxDate"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+        <span class="text-gray-500 dark:text-gray-400">-</span>
+        <input type="date" [ngModel]="selectedEndDate()" (ngModelChange)="selectedEndDate.set($event)"
+          placeholder="To Date" [max]="maxDate"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+      </div>
+
+      <!-- Search and Clear Buttons -->
+      <div class="flex gap-2">
+        <button (click)="onSearch()" [disabled]="isLoading()"
+          class="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fas fa-search"></i>
+        </button>
+        <button (click)="onClearSearch()" [disabled]="isLoading()"
+          class="px-4 py-2 cursor-pointer bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors duration-200 flex items-center text-sm disabled:opacity-50 disabled:cursor-not-allowed">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leave Requests Table -->
+  <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <!-- Table Header -->
+    <div class="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Leave Requests</h3>
+      <span class="text-sm text-gray-500 dark:text-gray-400">
+        Total: {{ totalRecords() }}
+      </span>
+    </div>
+
+    <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead class="bg-gray-50 dark:bg-gray-700">
+        <tr>
+          <th scope="col"
+            class="w-20 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Employee</th>
+          <th scope="col"
+            class="w-8 px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Leave Balance</th>
+          <th scope="col"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Leave Dates</th>
+          <th scope="col"
+            class="w-10 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Request Date</th>
+          <th scope="col"
+            class="w-6 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Days</th>
+          <th scope="col"
+            class="w-10 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Reason </th>
+          <th scope="col"
+            class="w-8 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Status</th>
+          <th scope="col"
+            class="w-8 px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+            Approve/Reject</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+        @if (isLoading()) {
+        <tr>
+          <td colspan="8" class="px-6 py-8 text-center">
+            <div class="flex items-center justify-center">
+              <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mr-2"></div>
+              <span class="text-gray-500 dark:text-gray-400">Loading leave requests...</span>
+            </div>
+          </td>
+        </tr>
+        } @else if (leaveRequests().length > 0) {
+        @for (leave of leaveRequests(); track leave.id) {
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ leave.employeeName }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+            <button (click)="viewBalanceDetails(leave)"
+              class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              title="View Balance Details">
+              <i class="fas fa-eye"></i>
+            </button>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+            {{ leave.startDate }} - {{ leave.endDate }}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+            {{leave.requestDate}}
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ leave.leaveDays }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+            <button (click)="viewDescription(leave)"
+              class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+              title="View Reason">
+              <i class="fas fa-eye"></i>
+            </button></td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+              [ngClass]="getStatusClass(leave.approvalStatus)">
+              {{ leave.approvalStatus }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            @if (leave.approvalStatus === 'Pending') {
+            <button (click)="updateStatus(leave, 'Approved')" [disabled]="isSubmitting()" title="Approve"
+              class="text-green-600 hover:text-green-900 cursor-pointer dark:text-green-400 dark:hover:text-green-300 disabled:opacity-50 text-lg">
+              <i class="fas fa-check-circle"></i>
+            </button>
+            <button (click)="updateStatus(leave, 'Rejected')" [disabled]="isSubmitting()" title="Reject"
+              class="ml-4 text-red-600 hover:text-red-900 cursor-pointer dark:text-red-400 dark:hover:text-red-300 disabled:opacity-50 text-lg">
+              <i class="fas fa-times-circle"></i>
+            </button>
+            } @else {
+            <span class="text-gray-400 dark:text-gray-500">No actions</span>
+            }
+          </td>
+        </tr>
+        }
+        } @else {
+        <tr>
+          <td colspan="8" class="px-6 py-8 text-center">
+            <div class="text-gray-500 justify-center dark:text-gray-400">
+              <i class="fas fa-calendar-times text-3xl mb-2 block"></i>
+              <p>No leave requests found</p>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  @if (totalPages() > 1) {
+  <div class="mt-6">
+    <app-pagination [currentPage]="currentPage()" [totalPages]="totalPages()" [totalItems]="totalRecords()"
+      [itemsPerPage]="itemsPerPage()" [isLoading]="isLoading()" (pageChange)="onPageChange($event)"
+      (itemsPerPageChange)="onItemsPerPageChange($event)"></app-pagination>
+  </div>
+  }
+
+  <!-- Leave Balance Modal -->
+  @if (showBalanceModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    (click)="closeBalanceModal()">
+    <div class="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Leave Balance for {{ selectedEmployeeForBalance()?.employeeName }}
+        </h3>
+        <button (click)="closeBalanceModal()"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
+          <i class="fas fa-times w-5 h-5"></i>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
+        @if(isLoadingBalance()){
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading balances...
+        </div>
+        } @else if(employeeLeaveBalances() && employeeLeaveBalances()!.length > 0) {
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Leave Type</th>
+              <th scope="col"
+                class="w-45 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Total Balance
+              </th>
+              <th scope="col"
+                class="w-45 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Balance Left</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            @for(balance of employeeLeaveBalances(); track balance.leaveType){
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">{{ balance.leaveType }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ balance.totalBalance }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ balance.balance }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        } @else {
+        <p class="text-center text-gray-500 dark:text-gray-400">No leave balance details found for this employee.</p>
+        }
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Leave Description Modal -->
+  @if (showDescriptionModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    (click)="closeDescriptionModal()">
+    <div class="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden"
+      (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Leave Reason for {{ selectedLeaveForDescription()?.employeeName }}
+        </h3>
+        <button (click)="closeDescriptionModal()"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
+          <i class="fas fa-times w-5 h-5"></i>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
+        <p class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+          {{ selectedLeaveForDescription()?.leaveDescription }}
+        </p>
+      </div>
+    </div>
+  </div>
+  }
+</div>

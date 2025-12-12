@@ -1,0 +1,65 @@
+<!-- Pagination Component -->
+ @if(totalItems > 0){
+<div class="px-4 sm:px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <!-- Left side: Page size selector and results summary -->
+    <div class="flex items-center justify-center sm:justify-start gap-4 text-sm text-gray-700 dark:text-gray-300">
+      <div class="flex items-center gap-2">
+        <span>Show</span> 
+        <select [value]="itemsPerPage" (change)="onItemsPerPageChange($event)" [disabled]="isLoading"
+          class="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+          @for(size of pageSizes; track size) {
+          <option [value]="size">{{size}}</option>
+          }
+        </select>
+        <span>entries</span>
+      </div>
+      <div class="hidden md:block">
+        @if(!isLoading){
+        <span>Showing {{startIndex()}} to {{endIndex()}} of {{totalItems}} results</span>
+        } @else {
+        <span>Loading...</span>
+        }
+      </div>
+    </div>
+
+    <!-- Pagination Controls -->
+    @if(!isLoading && totalPages > 1){
+    <div class="flex items-center justify-center space-x-1 sm:space-x-2">
+      <!-- Previous Button -->
+      <button 
+        [disabled]="!hasPreviousPage()" 
+        (click)="onPreviousPage()"
+        class="px-2 sm:px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed dark:text-white">
+        <span class="hidden sm:inline">Previous</span>
+        <span class="sm:hidden">Prev</span>
+      </button>
+
+      <!-- Page Numbers -->
+      <div class="flex items-center space-x-1">
+        @for(page of displayPages(); track trackByPage($index, page)){
+          @if(page === '...'){
+            <span class="px-1 sm:px-2 text-gray-500 dark:text-gray-400 text-sm">...</span>
+          } @else {
+            <button
+              [class]="'px-2 sm:px-3 py-1 text-sm rounded-md ' + (page === currentPage ? 'bg-blue-600 text-white' : 'border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-white')"
+              (click)="onPageChange(page)">
+              {{page}}
+            </button>
+          }
+        }
+      </div>
+
+      <!-- Next Button -->
+      <button 
+        [disabled]="!hasNextPage()" 
+        (click)="onNextPage()"
+        class="px-2 sm:px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed dark:text-white">
+        <span class="hidden sm:inline">Next</span>
+        <span class="sm:hidden">Next</span>
+      </button>
+    </div>
+    }
+  </div>
+</div>
+ }

@@ -1,0 +1,54 @@
+<!-- Alert Overlay -->
+@if (alerts().length > 0) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <!-- Alert Modal -->
+    @for (alert of alerts(); track alert) {
+    <div class="w-full max-w-md mx-auto mb-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all duration-300 ease-out"
+            [ngClass]="getAlertConfig(alert.type).bgColor">
+
+            <!-- Alert Header -->
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="flex items-center">
+                    <!-- Icon -->
+                    <div class="flex-shrink-0 mr-3">
+                        <i [class]="getAlertConfig(alert.type).icon + ' text-2xl'"
+                            [ngClass]="getAlertConfig(alert.type).textColor"></i>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold" [ngClass]="getAlertConfig(alert.type).textColor">
+                            {{ alert.title }}
+                        </h3>
+                    </div>
+
+                    <!-- Close button -->
+                    <button (click)="dismissAlert(alert.id)"
+                        class="flex-shrink-0 ml-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alert Body -->
+            <div class="px-6 py-4">
+                <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                    {{ alert.message }}
+                </p>
+            </div>
+
+            <!-- Alert Footer -->
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+                <div class="flex justify-end">
+                    <button (click)="onOkClick(alert)"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition-colors duration-200 font-medium">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>
+}

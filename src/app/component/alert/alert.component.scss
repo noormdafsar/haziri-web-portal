@@ -1,0 +1,29 @@
+/* Alert Component Styles */
+
+/* Custom animations for alert appearance */
+@keyframes alertSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Apply animation to alert modal */
+.alert-modal {
+  animation: alertSlideIn 0.2s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .alert-overlay {
+    padding: 1rem;
+  }
+
+  .alert-modal {
+    margin-bottom: 1rem;
+  }
+}

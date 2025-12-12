@@ -1,0 +1,104 @@
+<!-- Sidebar -->
+<aside
+  class="bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ease-in-out flex flex-col overflow-hidden scrollbar-glass h-screen"
+  [class.w-64]="!sidebarCollapsed()" [class.w-16]="sidebarCollapsed()"
+  [class.-translate-x-full]="!sidebarOpen && isMobile" [class.translate-x-0]="sidebarOpen || !isMobile"
+  [class.fixed]="isMobile" [class.inset-y-0]="isMobile" [class.left-0]="isMobile" [class.z-50]="isMobile">
+  <!-- Sidebar Header -->
+  <div class="h-16 flex items-center justify-center border-b border-gray-200 dark:border-gray-700"
+    [class.px-4]="!sidebarCollapsed()" [class.px-2]="sidebarCollapsed()">
+    <div class="flex items-center space-x-3" *ngIf="!sidebarCollapsed()">
+      <img src="isgpp-logo.png" alt="ISGPP Logo" class="h-14 w-auto">
+      <span class="text-lg font-semibold text-gray-900 dark:text-white">Haziri ADMIN</span>
+    </div>
+    <div class="flex items-center" *ngIf="sidebarCollapsed()">
+      <i class="fas fa-truck text-primary-500 text-xl"></i>
+    </div>
+    <!-- Mobile close button -->
+    <button *ngIf="isMobile" (click)="closeSidebar.emit()"
+      class="absolute right-4 top-4 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+      <i class="fas fa-times text-gray-500"></i>
+    </button>
+  </div>
+
+  <!-- Navigation Menu -->
+  <nav class="flex-1 py-4 overflow-y-auto overflow-x-hidden scrollbar-elegant" [class.px-2]="!sidebarCollapsed()"
+    [class.px-1]="sidebarCollapsed()">
+    <!-- Categorized Navigation (Expanded) -->
+    <div *ngIf="!sidebarCollapsed()" class="space-y-6">
+      @for (category of navigationCategories; track category) {
+      <div class="space-y-1">
+        <!-- Category Header -->
+        <h3 class="px-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          {{ category.name }}
+        </h3>
+        <!-- Category Items -->
+        <div class="space-y-1">
+          @for(item of category.items; track item.route) {
+          <a [routerLink]="item.route"
+            routerLinkActive="bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 border-r-2 border-primary-500"
+            class="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-l-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 group">
+            <i [class]="item.icon + ' text-base mr-3 w-5 text-center'"></i>
+            <span class="font-medium">{{ item.title }}</span>
+          </a>
+          }
+        </div>
+      </div>
+      }
+    </div>
+
+    <!-- Icon-only Navigation (Collapsed) -->
+    <div *ngIf="sidebarCollapsed()" class="space-y-2">
+      @for (item of navigationItems; track item.route) {
+      <a [routerLink]="item.route"
+        routerLinkActive="bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400"
+        class="flex items-center justify-center py-3 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 group"
+        [title]="item.title">
+        <i [class]="item.icon + ' text-lg'"></i>
+      </a>
+      }
+    </div>
+  </nav>
+
+  <!-- User Info Section -->
+  <div class="border-t border-gray-200 dark:border-gray-700" [class.p-4]="!sidebarCollapsed()"
+    [class.p-2]="sidebarCollapsed()">
+    <div class="relative">
+      <button (click)="toggleUserMenu.emit()"
+        class="w-full flex items-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 user-menu"
+        [class.justify-center]="sidebarCollapsed()" [class.space-x-3]="!sidebarCollapsed()"
+        [class.p-2]="!sidebarCollapsed()" [class.p-1]="sidebarCollapsed()">
+        <div class="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center flex-shrink-0">
+          <i class="fas fa-user text-white text-sm"></i>
+        </div>
+        <div class="flex-1 min-w-0 text-left" *ngIf="!sidebarCollapsed()">
+          <p class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ getCurrentUser()?.name || 'User' }}</p>
+          <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ getCurrentUser()?.email || 'user@example.com' }}</p>
+        </div>
+        <i class="fas fa-chevron-up text-gray-500 text-xs" *ngIf="!sidebarCollapsed()"></i>
+      </button>
+
+      <!-- User Menu Dropdown -->
+      <div *ngIf="userMenuOpen()"
+        class="absolute bottom-full left-0 right-0 mb-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 user-menu w-full"
+        [class.left-2]="sidebarCollapsed()" [class.right-2]="sidebarCollapsed()" [class.w-48]="sidebarCollapsed()">
+        <a routerLink="/profile" (click)="toggleUserMenu.emit()"
+          class="flex items-center px-4 py-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-user mr-3"></i>
+          Profile
+        </a>
+        <button (click)="toggleDarkMode.emit()"
+          class="w-full flex items-center px-4 py-2 text-sm cursor-pointer text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i [class]="darkMode() ? 'fas fa-sun' : 'fas fa-moon'" class="mr-3"></i>
+          {{ darkMode() ? 'Light Mode' : 'Dark Mode' }}
+        </button>
+        <div class="border-t border-gray-200 dark:border-gray-700 my-1"></div>
+        <a (click)="logout()"
+          class="flex items-center px-4 py-2 text-sm cursor-pointer text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+          <i class="fas fa-sign-out-alt mr-3"></i>
+          Logout
+        </a>
+      </div>
+    </div>
+  </div>
+</aside>

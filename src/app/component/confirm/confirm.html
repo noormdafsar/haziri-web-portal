@@ -1,0 +1,47 @@
+<!--Confirm Dialog Modal-->
+@if (dialog()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4" (click)="onBackdropClick()">
+  <!--Confirm Modal-->
+  <div
+    class="w-full max-w-md mx-auto" (click)="$event.stopPropagation()">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden transform transition-all duration-300 ease-out">
+
+      <!--Alert Header-->
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+        <div class="flex items-center">
+          <!--Title-->
+          <div class="flex-1 flex items-center gap-3">
+            <i [class]="getDialogConfig(dialog()!.type || 'info').icon + ' ' + getDialogConfig(dialog()!.type || 'info').iconColor + ' text-xl'"></i>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ dialog()!.title }}
+            </h3>
+          </div>
+
+          <!--Close button-->
+          <button (click)="onCancel()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors duration-200">
+            <i class="fas fa-times text-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!--Alert Body-->
+      <div class="px-6 py-4">
+        <p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+          {{ dialog()!.message }}
+        </p>
+      </div>
+      <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+        <div class="flex justify-end gap-3">
+          <button type="button" (click)="onCancel()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500 transition-colors duration-200">
+            {{ dialog()!.cancelText || 'Cancel' }}
+          </button>
+          <button type="button" (click)="onConfirm()" [ngClass]="getDialogConfig(dialog()!.type || 'info').confirmButtonClass">
+            {{ dialog()!.confirmText || 'OK' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

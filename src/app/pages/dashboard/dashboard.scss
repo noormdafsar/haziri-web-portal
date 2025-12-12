@@ -1,0 +1,251 @@
+/* Premium Dashboard Styling */
+
+/* Glass morphism effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Premium card hover effects */
+.premium-card {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.6s ease;
+}
+
+.premium-card:hover::before {
+  left: 100%;
+}
+
+.premium-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* Animated gradients */
+@keyframes gradient-animation {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animated-gradient {
+  background: linear-gradient(
+    -45deg,
+    #667eea,
+    #764ba2,
+    #f093fb,
+    #f5576c,
+    #4facfe,
+    #00f2fe
+  );
+  background-size: 400% 400%;
+  animation: gradient-animation 8s ease infinite;
+}
+
+/* Chart container styling */
+.chart-container {
+  position: relative;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.chart-container::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  border-radius: 16px;
+  pointer-events: none;
+}
+
+/* Luxury text effects */
+.luxury-text {
+  background: linear-gradient(
+    135deg,
+    #667eea 0%,
+    #764ba2 25%,
+    #f093fb 50%,
+    #f5576c 75%,
+    #667eea 100%
+  );
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: luxury-shine 3s ease-in-out infinite;
+}
+
+@keyframes luxury-shine {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+/* Glowing elements */
+.glow-effect {
+  box-shadow: 
+    0 0 20px rgba(102, 126, 234, 0.3),
+    0 0 40px rgba(102, 126, 234, 0.2),
+    0 0 60px rgba(102, 126, 234, 0.1);
+}
+
+.glow-effect:hover {
+  box-shadow: 
+    0 0 30px rgba(102, 126, 234, 0.4),
+    0 0 60px rgba(102, 126, 234, 0.3),
+    0 0 90px rgba(102, 126, 234, 0.2);
+}
+
+/* Premium button effects */
+.premium-button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  transition: all 0.3s ease;
+}
+
+.premium-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.premium-button:hover::before {
+  left: 100%;
+}
+
+.premium-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Floating animation for cards */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.float-animation {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Pulse animation for important metrics */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8), 0 0 30px rgba(16, 185, 129, 0.4);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+/* Dark mode enhancements */
+:host-context(.dark) .glass-card {
+  background: rgba(31, 41, 55, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+:host-context(.dark) .chart-container {
+  background: rgba(31, 41, 55, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Remove shadows and hover animations on dashboard tiles */
+:host ::ng-deep .rounded-lg,
+:host ::ng-deep .shadow-lg,
+:host ::ng-deep .shadow-2xl,
+:host ::ng-deep .p-3,
+:host ::ng-deep .p-4,
+:host ::ng-deep .p-6,
+:host ::ng-deep .p-8 {
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+/* Disable hover transforms and group-hover effects */
+:host ::ng-deep .rounded-lg:hover,
+:host ::ng-deep .p-3:hover,
+:host ::ng-deep .p-4:hover,
+:host ::ng-deep .p-6:hover,
+:host ::ng-deep .p-8:hover,
+:host ::ng-deep .group:hover * {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove premium-card/premium-button hover glints */
+:host ::ng-deep .premium-card::before,
+:host ::ng-deep .premium-button::before {
+  display: none !important;
+}
+
+:host ::ng-deep .premium-card:hover,
+:host ::ng-deep .premium-button:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure no large shadows from glow helper */
+:host ::ng-deep .glow-effect,
+:host ::ng-deep .glow-effect:hover {
+  box-shadow: none !important;
+}
+
+/* Keep pulse animations (status indicators) — not hover-related */

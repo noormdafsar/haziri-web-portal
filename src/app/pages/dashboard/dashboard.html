@@ -1,0 +1,243 @@
+<!-- Mentor Reporting System Dashboard -->
+<div class="space-y-6 scrollbar-elegant">
+
+  <!-- Pending Leaves Alert -->
+  @if(summaryCounts().pendingLeaves > 0){
+  <div
+    class="bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 p-4 rounded-lg flex items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <i class="fas fa-exclamation-triangle text-yellow-500 text-xl"></i>
+      <p>
+        You have <span class="font-bold">{{ summaryCounts().pendingLeaves }}</span> pending leave requests that need your attention.
+      </p>
+    </div>
+    <button (click)="openPendingLeavesModal()" class="text-sm font-medium text-yellow-800 dark:text-yellow-200 hover:underline whitespace-nowrap">
+      View Requests &rarr;
+    </button>
+  </div>
+  }
+
+  <!-- Dashboard Header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <div class="w-14 h-14 bg-slate-100 dark:bg-slate-800 rounded-lg flex items-center justify-center mr-3">
+        <i class="fas fa-tachometer-alt text-slate-600 dark:text-slate-400 text-2xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Haziri Admin Dashboard</h1>
+        <p class="text-gray-600 dark:text-gray-400">Haziri Leave and Attendence Insights.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+    <!-- Online Visits -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
+      <div class="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center">
+        <i class="fas fa-wifi text-green-500 text-lg"></i>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Online Visits</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().onlineVisits }}</p>
+      </div>
+    </div>
+    <!-- Offline Visits -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
+      <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/40 rounded-full flex items-center justify-center">
+       </div>
+      <div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Offline Visits</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().offlineVisits }}</p>
+      </div>
+    </div>
+    <!-- Forgot Checkout -->
+    <div (click)="openForgotCheckoutModal()" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow">
+      <div class="w-10 h-10 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center">
+        <i class="fas fa-user-clock text-red-500 text-lg"></i>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Forgot Checkout</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().forgotCheckout }}</p>
+      </div>
+    </div>
+    <!-- Virtual Meetings -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
+      <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center">
+        <i class="fas fa-video text-purple-500 text-lg"></i>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Virtual Meetings</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().otherVirtualMeetings }}</p>
+      </div>
+    </div>
+    <!-- Other Activities -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
+      <div class="w-10 h-10 bg-cyan-100 dark:bg-cyan-900/40 rounded-full flex items-center justify-center">
+        <i class="fas fa-clipboard-list text-cyan-500 text-lg"></i>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Other Activities</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().totalOtherActivities }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Section -->
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px]">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Daily Activity Summary (Last 7 Days)</h3>
+      <div id="gpVisitChart" class="w-full h-full">
+        <apx-chart *ngIf="gpVisitChartOptions"
+          [series]="gpVisitChartOptions.series"
+          [chart]="gpVisitChartOptions.chart"
+          [xaxis]="gpVisitChartOptions.xaxis"
+          [stroke]="gpVisitChartOptions.stroke"
+          [colors]="gpVisitChartOptions.colors"
+          [dataLabels]="gpVisitChartOptions.dataLabels"
+          [legend]="gpVisitChartOptions.legend"
+          [grid]="gpVisitChartOptions.grid"
+          [plotOptions]="gpVisitChartOptions.plotOptions"></apx-chart>
+      </div>
+    </div>
+
+    <div
+      class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px]">
+      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Other Activities & Virtual Meetings (Last 7 Days)</h3>
+      <div id="otherActivityChart" class="w-full h-full">
+        <apx-chart *ngIf="otherActivityChartOptions"
+          [series]="otherActivityChartOptions.series"
+          [chart]="otherActivityChartOptions.chart"
+          [xaxis]="otherActivityChartOptions.xaxis"
+          [stroke]="otherActivityChartOptions.stroke"
+          [colors]="otherActivityChartOptions.colors"
+          [dataLabels]="otherActivityChartOptions.dataLabels"
+          [legend]="otherActivityChartOptions.legend"
+          [grid]="otherActivityChartOptions.grid"
+          [plotOptions]="otherActivityChartOptions.plotOptions"></apx-chart>
+      </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px] flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Upcoming Holidays</h3>
+      </div>
+
+      <div class="space-y-2 flex-1 overflow-y-auto scrollbar-elegant">
+        <div *ngFor="let holiday of upcomingHolidays" class="p-3 rounded-lg border border-gray-100 dark:border-gray-700">
+          <div class="flex items-start space-x-3">
+            <div class="w-8 h-8 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center">
+              <i class="fas fa-calendar-day text-emerald-600 text-sm"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-gray-900 dark:text-white text-sm">{{ holiday.name }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ holiday.date }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pending Leaves Modal -->
+  @if (showPendingLeavesModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closePendingLeavesModal()">
+    <div class="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Pending Leave Requests
+        </h3>
+        <button (click)="closePendingLeavesModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
+          <i class="fas fa-times w-5 h-5"></i>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
+        @if(isLoadingModal()){
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading pending requests...
+        </div>
+        } @else if(pendingLeaveRequests().length > 0) {
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                User Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Leave Dates
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Days</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            @for(req of pendingLeaveRequests(); track req.id){
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">{{ req.userName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm">
+                {{ req.startDate | date:'dd/MM/yy' }} - {{ req.endDate | date:'dd/MM/yy' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ req.leaveDays }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        } @else {
+        <p class="text-center text-gray-500 dark:text-gray-400">No pending leave requests found.</p>
+        }
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Forgot Checkout Modal -->
+  @if (showForgotCheckoutModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closeForgotCheckoutModal()">
+    <div class="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Users Who Forgot Checkout
+        </h3>
+        <button (click)="closeForgotCheckoutModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
+          <i class="fas fa-times w-5 h-5"></i>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
+        @if(isLoadingForgotCheckoutModal()){
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading late checkout list...
+        </div>
+        } @else if(forgotCheckoutList().length > 0) {
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                User Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                GP Name
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            @for(item of forgotCheckoutList(); track item.userId){
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">{{ item.UserName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ item.GpName }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        } @else {
+        <p class="text-center text-gray-500 dark:text-gray-400">No users found who forgot to checkout.</p>
+        }
+      </div>
+    </div>
+  </div>
+  }
+</div>

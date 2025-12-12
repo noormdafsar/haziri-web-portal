@@ -1,0 +1,126 @@
+<div class="p-4 sm:p-6 lg:p-8">
+    <div class="sm:flex sm:items-center sm:justify-between mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Holiday Calendar</h2>
+        <div class="flex items-center space-x-2 mt-4 sm:mt-0">
+            <button (click)="goToToday()" class="btn btn-outline">Today</button>
+            <button (click)="openModal()" class="btn btn-primary">
+                <i class="fas fa-plus mr-2"></i> Add Holiday
+            </button>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <!-- Calendar Header -->
+        <div class="px-6 py-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+            <button (click)="changeMonth(-1)" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-chevron-left h-5 w-5 text-gray-500 dark:text-gray-400"></i>
+            </button>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ currentMonthDisplay() }}</h3>
+            <button (click)="changeMonth(1)" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                <i class="fas fa-chevron-right h-5 w-5 text-gray-500 dark:text-gray-400"></i>
+            </button>
+        </div>
+
+        <!-- Calendar Grid -->
+        <div class="grid grid-cols-7">
+            <!-- Day Headers -->
+            @for (day of ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']; track day) {
+            <div class="py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                {{ day }}
+            </div>
+            }
+
+            <!-- Calendar Days -->
+            @for (day of calendarDays(); track day.date) {
+            <div class="relative border-t border-r border-gray-200 dark:border-gray-700 h-28 sm:h-32 p-2 flex flex-col"
+                [ngClass]="{
+                    'bg-gray-50 dark:bg-gray-700/50': !day.isCurrentMonth,
+                    'bg-white dark:bg-gray-800': day.isCurrentMonth
+                }">
+                <time [attr.datetime]="day.date.toISOString().split('T')[0]" class="text-sm font-medium" [ngClass]="{
+                        'text-gray-400 dark:text-gray-500': !day.isCurrentMonth,
+                        'text-white bg-blue-600 rounded-full h-6 w-6 flex items-center justify-center': day.isToday,
+                        'text-gray-900 dark:text-white': !day.isToday && day.isCurrentMonth
+                    }">
+                    {{ day.date.getDate() }}
+                </time>
+
+                @if (day.holiday) {
+                <div
+                    class="mt-1 p-1 rounded-md bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 text-xs truncate cursor-pointer group relative">
+                    <span>{{ day.holiday.holidayName }}</span>
+                    <div
+                        class="absolute z-10 hidden group-hover:flex items-center space-x-1 right-1 top-1/2 -translate-y-1/2 bg-gray-200 dark:bg-gray-600 p-1 rounded">
+                        <button (click)="openModal(day.holiday)" class="text-blue-500 hover:text-blue-700">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button (click)="deleteHoliday(day.holiday.id)" class="text-red-500 hover:text-red-700">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                } @else if (day.isCurrentMonth) {
+                <button (click)="openModal(null, day.date)"
+                    class="absolute top-1 right-1 h-6 w-6 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <i class="fas fa-plus text-xs text-gray-500 dark:text-gray-400"></i>
+                </button>
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Holiday Modal -->
+@if (isModalOpen()) {
+<div class="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closeModal()">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md" (click)="$event.stopPropagation()">
+        <form [formGroup]="holidayForm" (ngSubmit)="saveHoliday()">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    {{ editingHoliday() ? 'Edit' : 'Add' }} Holiday
+                </h3>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-4">
+                <div>
+                    <label for="holidayName"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Holiday Name</label>
+                    <input type="text" id="holidayName" formControlName="holidayName"
+                        class="input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
+                        required>
+                    @if (holidayForm.get('holidayName')?.invalid && holidayForm.get('holidayName')?.touched) {
+                    <p class="text-red-500 text-xs mt-1">Holiday name is required.</p>
+                    }
+                </div>
+                <div>
+                    <label for="holidayDate"
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date</label>
+                    <input type="date" id="holidayDate" formControlName="holidayDate"
+                        class="input bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring focus:ring-blue-500 dark:focus:ring-blue-400"
+                        required>
+                    @if (holidayForm.get('holidayDate')?.invalid && holidayForm.get('holidayDate')?.touched) {
+                    <p class="text-red-500 text-xs mt-1">Holiday date is required.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex justify-end space-x-2 rounded-b-lg">
+                <button type="submit" class="btn btn-primary cursor-pointer"
+                    [disabled]="holidayForm.invalid || isLoading()">
+                    @if (isLoading()) {
+                    <i class="fas fa-spinner fa-spin mr-2"></i>
+                    Saving...
+                    } @else {
+                    Save Holiday
+                    }
+                </button>
+                <button type="button" (click)="closeModal()" class="btn btn-secondary cursor-pointer">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+}

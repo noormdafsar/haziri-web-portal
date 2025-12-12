@@ -1,0 +1,40 @@
+<!-- Fixed Header -->
+<header
+  class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-4 lg:px-6 flex-shrink-0">
+  <div class="flex items-center space-x-4">
+    <!-- Mobile menu button -->
+    <button (click)="toggleSidebar.emit()" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 lg:hidden">
+      <i class="fas fa-bars text-gray-500"></i>
+    </button>
+
+    <!-- Desktop sidebar toggle button -->
+    <button (click)="toggleSidebar.emit()"
+      class="hidden lg:block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+      <i class="fas fa-bars text-gray-500" [class.rotate-180]="sidebarCollapsed"></i>
+    </button>
+
+    <!-- Breadcrumb -->
+    <div class="hidden lg:flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+      <i class="fas fa-home"></i>
+      <span>/</span>
+      <span class="font-medium text-gray-900 dark:text-white">{{ pageTitle }}</span>
+    </div>
+  </div>
+
+  <!-- Header Actions -->
+  <div class="flex items-center space-x-4">
+    <!-- Search -->
+    <div class="hidden md:block relative">
+      <input type="text" placeholder="Search..."
+        class="w-64 pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+      <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+    </div>
+
+    <!-- Notifications -->
+    <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 relative">
+      <i class="fas fa-bell text-gray-600 dark:text-gray-200"></i>
+      <span
+        class="absolute -top-1 -right-1 w-3 h-3 bg-danger-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+    </button>
+  </div>
+</header>

@@ -1,0 +1,48 @@
+<!-- MRS Management SaaS Layout -->
+<div class="h-screen bg-gray-50 dark:bg-gray-900 flex scrollbar-neon">
+  <!-- Sidebar Component -->
+  <app-sidebar
+    [navigationItems]="navigationItems"
+    [navigationCategories]="navigationCategories"
+    [sidebarCollapsed]="sidebarCollapsed"
+    [sidebarOpen]="sidebarOpen"
+    [isMobile]="isMobile()"
+    [userMenuOpen]="userMenuOpen"
+    [darkMode]="darkMode"
+    (toggleSidebar)="toggleSidebar()"
+    (closeSidebar)="closeSidebar()"
+    (toggleUserMenu)="toggleUserMenu()"
+    (toggleDarkMode)="toggleDarkMode()"
+  ></app-sidebar>
+
+  <!-- Main Content Area -->
+  <div class="flex-1 flex flex-col min-w-0">
+    <!-- Header Component -->
+    <app-header
+      [sidebarCollapsed]="sidebarCollapsed()"
+      [pageTitle]="currentPageTitle()"
+      (toggleSidebar)="toggleSidebar()"
+    ></app-header>
+
+    <!-- Scrollable Content -->
+    <main class="flex-1 overflow-y-auto scrollbar-premium">
+      <div class="p-4 lg:p-6">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+
+    <!-- Footer Component -->
+    <app-footer></app-footer>
+  </div>
+
+  <!-- Mobile Overlay -->
+  <div
+    *ngIf="sidebarOpen() && isMobile()"
+    (click)="closeSidebar()"
+    class="fixed inset-0 z-40 bg-black bg-opacity-50"
+  ></div>
+</div>
+
+<!-- Global Components -->
+<app-alert></app-alert>
+<app-confirm></app-confirm>

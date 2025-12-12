@@ -1,0 +1,125 @@
+<div class="container mx-auto p-4 sm:p-6 lg:p-8">
+  <div class="bg-white dark:bg-gray-800 shadow-lg rounded-2xl overflow-hidden" [formGroup]="profileForm">
+    <div class="bg-gradient-to-br from-[#aed9fc] dark:bg-gradient-to-r dark:from-blue-600 dark:to-green-600 p-8">
+      <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
+        <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-md">
+          <i class="fas fa-user text-4xl text-blue-600"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-white text-center sm:text-left">{{ user()?.name || 'User Profile' }}</h1>
+          <p class="text-blue-100 text-center sm:text-left">{{ user()?.designationName || 'User' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 sm:p-8">
+      <div class="flex justify-between items-center border-b border-gray-200 dark:border-gray-700 pb-4 mb-6">
+        <h2 class="text-xl font-semibold text-gray-800 dark:text-white">
+          Personal Information
+        </h2>
+        <button (click)="toggleEdit()"
+          class="px-4 py-2 text-sm font-medium rounded-lg transition-colors duration-200 flex items-center space-x-2"
+          [ngClass]="isEditing() ? 'bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600' : 'bg-blue-600 text-white hover:bg-blue-700'">
+          <i class="fas" [ngClass]="isEditing() ? 'fa-times' : 'fa-pencil-alt'"></i>
+          <span>{{ isEditing() ? 'Cancel' : 'Edit Profile' }}</span>
+        </button>
+      </div>
+
+      <div class="space-y-6">
+        <!-- Full Name -->
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-user text-gray-400"></i>
+            </div>
+            <input type="text" id="name" formControlName="name" [readOnly]="!isEditing()"
+              class="block w-full pl-10 p-2.5 rounded-lg"
+              [ngClass]="isEditing() ? 'bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white' : 'bg-gray-100 border-transparent text-gray-800 dark:bg-gray-700/50 dark:text-gray-200'">
+          </div>
+        </div>
+
+        <!-- Email Address -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Email Address</label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-envelope text-gray-400"></i>
+            </div>
+            <input type="email" id="email" formControlName="email" [readOnly]="!isEditing()"
+              class="block w-full pl-10 p-2.5 rounded-lg"
+              [ngClass]="isEditing() ? 'bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white' : 'bg-gray-100 border-transparent text-gray-800 dark:bg-gray-700/50 dark:text-gray-200'">
+          </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div>
+          <label for="phone" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
+          <div class="mt-1 relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-phone text-gray-400"></i>
+            </div>
+            <input type="text" id="phone" formControlName="phone" [readOnly]="!isEditing()"
+              class="block w-full pl-10 p-2.5 rounded-lg"
+              [ngClass]="isEditing() ? 'bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white' : 'bg-gray-100 border-transparent text-gray-800 dark:bg-gray-700/50 dark:text-gray-200'">
+          </div>
+        </div>
+
+        <!-- Password Fields - only show when editing -->
+        <div *ngIf="isEditing()" class="space-y-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-medium text-gray-800 dark:text-white">Change Password</h3>
+          <!-- New Password -->
+          <div>
+            <label for="password" class="block text-sm font-medium text-gray-500 dark:text-gray-400">New
+              Password</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input type="password" id="password" formControlName="password"
+                class="block w-full pl-10 p-2.5 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-gray-500 dark:text-gray-400">Confirm
+              New Password</label>
+            <div class="mt-1 relative rounded-md shadow-sm">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-lock text-gray-400"></i>
+              </div>
+              <input type="password" id="confirmPassword" formControlName="confirmPassword"
+                class="block w-full pl-10 p-2.5 rounded-lg bg-gray-50 border border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            </div>
+            <div *ngIf="profileForm.hasError('mismatch') && profileForm.get('confirmPassword')?.touched"
+              class="text-red-500 text-sm mt-1">
+              Passwords do not match.
+            </div>
+          </div>
+        </div>
+
+        <!-- Save Button -->
+        <div *ngIf="isEditing()" class="pt-4">
+          <button (click)="onSave()" [disabled]="isLoading() || profileForm.invalid"
+            class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-300 disabled:cursor-not-allowed">
+            <span *ngIf="!isLoading()">
+              <i class="fas fa-save mr-2"></i>
+              Save Changes
+            </span>
+            <span *ngIf="isLoading()">
+              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+              </svg>
+              Saving...
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
