@@ -43,16 +43,6 @@
         <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().forgotCheckout }}</p>
       </div>
     </div>
-    <!-- Late Arrivals -->
-    <div (click)="openLateArrivalsModal()" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow">
-      <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/40 rounded-full flex items-center justify-center">
-        <i class="fas fa-history text-orange-500 text-lg"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Late Arrivals</p>
-        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().lateArrivals }}</p>
-      </div>
-    </div>
   </div>
 
   <!-- Charts Section -->
@@ -61,7 +51,11 @@
     <div class="col-span-1 xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px] flex flex-col">
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-xl font-bold text-gray-900 dark:text-white">Monthly Late Attendance Report (After 10:30 AM)</h3>
-        <span class="text-sm text-gray-500 dark:text-gray-400">Current Month</span>
+        <select (change)="onMonthFilterChange($event)" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 outline-none">
+          @for(m of availableMonths(); track m.value){
+            <option [value]="m.value" [selected]="m.value === selectedMonth()">{{ m.label }}</option>
+          }
+        </select>
       </div>
       
       <div class="overflow-x-auto flex-1 scrollbar-elegant">
@@ -80,7 +74,9 @@
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ emp.name }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ emp.designation }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">{{ emp.totalLateDays }}</span>
+                  <button (click)="openUserLateHistoryModal(emp.employeeId, emp.name)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50 cursor-pointer transition-colors" title="View Details">
+                    {{ emp.totalLateDays }}
+                  </button>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{{ emp.averageLateDuration }}</td>
               </tr>
@@ -228,39 +224,37 @@
   </div>
   }
 
-  <!-- Late Arrivals Modal -->
-  @if (showLateArrivalsModal()) {
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closeLateArrivalsModal()">
+  <!-- User Late History Modal -->
+  @if (showUserLateHistoryModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closeUserLateHistoryModal()">
     <div class="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
       <!-- Modal Header -->
       <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-          Late Arrivals (After 10:30 AM)
+          Late History: {{ selectedUserName() }}
         </h3>
-        <button (click)="closeLateArrivalsModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
+        <button (click)="closeUserLateHistoryModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
           <i class="fas fa-times w-5 h-5"></i>
           <span class="sr-only">Close modal</span>
         </button>
       </div>
       <!-- Modal Body -->
       <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
-        @if(isLoadingLateArrivalsModal()){
+        @if(isLoadingUserLateHistory()){
         <div class="text-center">
-          <i class="fas fa-spinner fa-spin mr-2"></i> Loading late arrivals...
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading history...
         </div>
-        } @else if(lateArrivalsList().length > 0) {
+        } @else if(userLateHistoryList().length > 0) {
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead class="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee Name</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check-in Time</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            @for(item of lateArrivalsList(); track item.employeeId + item.date){
+            @for(item of userLateHistoryList(); track item.date){
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap">{{ item.name }}</td>
               <td class="px-6 py-4 whitespace-nowrap">{{ item.date | date:'mediumDate' }}</td>
               <td class="px-6 py-4 whitespace-nowrap text-red-500 font-medium">{{ item.checkInTime }}</td>
             </tr>
@@ -268,7 +262,7 @@
           </tbody>
         </table>
         } @else {
-        <p class="text-center text-gray-500 dark:text-gray-400">No late arrivals found for this month.</p>
+        <p class="text-center text-gray-500 dark:text-gray-400">No late records found for this user.</p>
         }
       </div>
     </div>

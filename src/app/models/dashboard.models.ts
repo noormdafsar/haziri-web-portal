@@ -76,3 +76,8 @@ export interface LateArrival {
   date: string;
   checkInTime: string;
 }
+
+export interface UserLateHistory {
+  date: string;
+  checkInTime: string;
+}

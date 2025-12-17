@@ -5,7 +5,7 @@ import { catchError } from 'rxjs/operators';
 import { AlertService } from '../../service/alert.service';
 
 import { DashboardService } from '../../service/dashboard.service';
-import { LateArrival, LateCheckout, LateEmployeeSummary, SummaryCounts } from '../../models/dashboard.models';
+import { LateArrival, LateCheckout, LateEmployeeSummary, SummaryCounts, UserLateHistory } from '../../models/dashboard.models';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,12 +22,15 @@ export class DashboardComponent implements OnInit {
   showPendingLeavesModal = signal<boolean>(false);
   showForgotCheckoutModal = signal<boolean>(false);
   isLoadingForgotCheckoutModal = signal<boolean>(false);
-  showLateArrivalsModal = signal<boolean>(false);
-  isLoadingLateArrivalsModal = signal<boolean>(false);
+  showUserLateHistoryModal = signal<boolean>(false);
+  isLoadingUserLateHistory = signal<boolean>(false);
   pendingLeaveRequests = signal<any[]>([]); // Consider creating a model for this
   forgotCheckoutList = signal<LateCheckout[]>([]);
   lateEmployeesList = signal<LateEmployeeSummary[]>([]);
-  lateArrivalsList = signal<LateArrival[]>([]);
+  userLateHistoryList = signal<UserLateHistory[]>([]);
+  selectedUserName = signal<string>('');
+  availableMonths = signal<{ label: string, value: number }[]>([]);
+  selectedMonth = signal<number>(0);
 
   summaryCounts = signal<SummaryCounts>({
     onlineVisits: 0,
@@ -48,6 +51,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
     this.isLoading.set(true);
+    this.generateMonths();
 
     // Set mock data for general stats
     const mockSummaryData = {
@@ -95,7 +99,22 @@ export class DashboardComponent implements OnInit {
       });
 
     // Fetch Monthly Late Report
-    this._dashboardService.getMonthlyLateReport().subscribe({
+    this.loadMonthlyLateReport();
+  }
+
+  generateMonths() {
+    const options = [];
+    const today = new Date();
+    for (let i = 0; i < 3; i++) {
+      const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      const label = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+      options.push({ label: label, value: i });
+    }
+    this.availableMonths.set(options);
+  }
+
+  loadMonthlyLateReport() {
+    this._dashboardService.getMonthlyLateReport(this.selectedMonth()).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.lateEmployeesList.set(res.data);
@@ -103,6 +122,12 @@ export class DashboardComponent implements OnInit {
       },
       error: () => this._alertService.error('Error', 'Failed to load late attendance report.')
     });
+  }
+
+  onMonthFilterChange(event: Event) {
+    const val = +(event.target as HTMLSelectElement).value;
+    this.selectedMonth.set(val);
+    this.loadMonthlyLateReport();
   }
 
     openPendingLeavesModal() {
@@ -147,25 +172,26 @@ export class DashboardComponent implements OnInit {
     this.showForgotCheckoutModal.set(false);
   }
 
-  openLateArrivalsModal() {
-    this.showLateArrivalsModal.set(true);
-    this.isLoadingLateArrivalsModal.set(true);
-    this.lateArrivalsList.set([]);
+  openUserLateHistoryModal(employeeId: string, name: string) {
+    this.selectedUserName.set(name);
+    this.showUserLateHistoryModal.set(true);
+    this.isLoadingUserLateHistory.set(true);
+    this.userLateHistoryList.set([]);
 
-    this._dashboardService.getLateArrivals().subscribe({
+    this._dashboardService.getUserLateHistory(employeeId).subscribe({
       next: (res) => {
-        if (res.success && res.data?.data) {
-          this.lateArrivalsList.set(res.data.data);
+        if (res.success && res.data) {
+          this.userLateHistoryList.set(res.data);
         }
       },
-      error: (err) => this._alertService.error('Load Failed', err.error?.message || 'Could not fetch late arrivals list.'),
+      error: (err) => this._alertService.error('Load Failed', err.error?.message || 'Could not fetch late history.'),
       complete: () => {
-        this.isLoadingLateArrivalsModal.set(false);
+        this.isLoadingUserLateHistory.set(false);
       }
     });
   }
 
-  closeLateArrivalsModal() {
-    this.showLateArrivalsModal.set(false);
+  closeUserLateHistoryModal() {
+    this.showUserLateHistoryModal.set(false);
   }
 }

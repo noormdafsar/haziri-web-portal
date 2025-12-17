@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { LateArrival, LateCheckoutApiResponse, LateEmployeeSummary, PendingLeaveResponse } from '../models/dashboard.models';
+import { LateArrival, LateCheckoutApiResponse, LateEmployeeSummary, PendingLeaveResponse, UserLateHistory } from '../models/dashboard.models';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environment/environment';
 import { APIResponse } from '../models/api-response-models';
@@ -47,14 +47,31 @@ export class DashboardService {
     }).pipe(delay(500));
   }
 
-  getMonthlyLateReport(): Observable<APIResponse<LateEmployeeSummary[]>> {
-    // Mock data for employees late (> 10:30 AM) in the current month
-    const mockData: LateEmployeeSummary[] = [
-      { employeeId: '1001', name: 'Rakesh Mehta', designation: 'CTO', totalLateDays: 5, averageLateDuration: '15 mins' },
-      { employeeId: '1002', name: 'Subhajit Roy', designation: 'Senior Software Engineer', totalLateDays: 3, averageLateDuration: '10 mins' },
-      { employeeId: '1003', name: 'Sourin Chaterjee', designation: 'Software Engineer', totalLateDays: 8, averageLateDuration: '45 mins' },
-      { employeeId: '1004', name: 'Disha', designation: 'Back Office', totalLateDays: 1, averageLateDuration: '5 mins' },
-    ];
+  getMonthlyLateReport(monthOffset: number = 0): Observable<APIResponse<LateEmployeeSummary[]>> {
+    // Mock data for employees late (> 10:30 AM)
+    let mockData: LateEmployeeSummary[] = [];
+
+    if (monthOffset === 0) {
+      // Current Month
+      mockData = [
+        { employeeId: '1001', name: 'Rakesh Mehta', designation: 'CTO', totalLateDays: 5, averageLateDuration: '15 mins' },
+        { employeeId: '1002', name: 'Subhajit Roy', designation: 'Senior Software Engineer', totalLateDays: 3, averageLateDuration: '10 mins' },
+        { employeeId: '1003', name: 'Sourin Chaterjee', designation: 'Software Engineer', totalLateDays: 8, averageLateDuration: '45 mins' },
+        { employeeId: '1004', name: 'Disha', designation: 'Back Office', totalLateDays: 1, averageLateDuration: '5 mins' },
+      ];
+    } else if (monthOffset === 1) {
+      // Last Month
+      mockData = [
+        { employeeId: '1001', name: 'Rakesh Mehta', designation: 'CTO', totalLateDays: 2, averageLateDuration: '12 mins' },
+        { employeeId: '1003', name: 'Sourin Chaterjee', designation: 'Software Engineer', totalLateDays: 5, averageLateDuration: '30 mins' },
+      ];
+    } else {
+      // 2 Months Ago
+      mockData = [
+        { employeeId: '1002', name: 'Subhajit Roy', designation: 'Senior Software Engineer', totalLateDays: 1, averageLateDuration: '5 mins' },
+        { employeeId: '1004', name: 'Disha', designation: 'Back Office', totalLateDays: 2, averageLateDuration: '10 mins' },
+      ];
+    }
 
     return of({
       success: true, message: 'Fetched Successfully', data: mockData, timestamp: new Date().toISOString()
@@ -73,6 +90,20 @@ export class DashboardService {
 
     return of({
       success: true, message: 'Fetched Successfully', data: { data: mockData, count: mockData.length }, timestamp: new Date().toISOString()
+    }).pipe(delay(500));
+  }
+
+  getUserLateHistory(employeeId: string): Observable<APIResponse<UserLateHistory[]>> {
+    // Mock data for a specific user's late history
+    const mockData: UserLateHistory[] = [
+      { date: '2025-11-02', checkInTime: '10:45 AM' },
+      { date: '2025-11-05', checkInTime: '11:00 AM' },
+      { date: '2025-11-10', checkInTime: '10:55 AM' },
+      { date: '2025-11-18', checkInTime: '10:40 AM' }
+    ];
+
+    return of({
+      success: true, message: 'Fetched Successfully', data: mockData, timestamp: new Date().toISOString()
     }).pipe(delay(500));
   }
 }
