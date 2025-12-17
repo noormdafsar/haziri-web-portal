@@ -40,7 +40,7 @@ export class LeaveRequestService {
           approvalStatus: 'Approved', balance: 8
         },
         {
-          id: 3, employeeId: 1003, employeeName: 'Rahul Singh', startDate: '2025-11-10', endDate: '2025-11-15',
+          id: 3, employeeId: 1003, employeeName: 'Subhajit Roy', startDate: '2025-11-10', endDate: '2025-11-15',
           requestDate: '2025-11-01', leaveDays: 6, leaveDescription: 'Planned vacation trip.',
           approvalStatus: 'Rejected', balance: 15
         }

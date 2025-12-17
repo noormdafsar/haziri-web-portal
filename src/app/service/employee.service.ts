@@ -34,23 +34,31 @@ export class EmployeeService {
       data: [
         {
           id: 1, employeeId: 1001, name: 'Rakesh Mehta', phone: '7980639653', gender: 'Male', password: 'password',
-          employeeRoleId: 2, employeeRoleName: 'Employee', designationId: 1, designationName: 'CTO(Chief Technology Officer)', isActive: 1
+          employeeRoleId: 2, employeeRoleName: 'Employee', designationId: 1, designationName: 'CTO(Chief Technical Officer)', isActive: 1
         },
         {
-          id: 2, employeeId: 1002, name: 'Nooruddin Md Afsar', phone: '8797905664', gender: 'Male', password: 'password',
+          id: 2, employeeId: 1006, name: 'Nooruddin Md Afsar', phone: '8797905664', gender: 'Male', password: 'password',
           employeeRoleId: 1, employeeRoleName: 'Admin', designationId: 2, designationName: 'Software Engineer', isActive: 1
         },
         {
+          id: 6, employeeId: 1002, name: 'Subhajit Roy', phone: '1234567890', gender: 'Male', password: 'password',
+          employeeRoleId: 5, employeeRoleName: 'Employee', designationId: 5, designationName: 'Senior Software Engineer', isActive: 1
+        },
+        {
           id: 3, employeeId: 1003, name: 'Sourin Chaterjee', phone: '6297260227', gender: 'Male', password: 'password',
-          employeeRoleId: 2, employeeRoleName: 'Employee', designationId: 3, designationName: 'Software Engineer', isActive: 0
+          employeeRoleId: 3, employeeRoleName: 'Employee', designationId: 3, designationName: 'Software Engineer', isActive: 1
         },
         {
-          id: 4, employeeId: 1003, name: 'Disha', phone: '7439151313', gender: 'Female', password: 'password',
-          employeeRoleId: 3, employeeRoleName: 'Employee', designationId: 4, designationName: 'Back Office', isActive: 0
+          id: 7, employeeId: 1007, name: 'Tapabrata Mukherjee', phone: '6297260227', gender: 'Male', password: 'password',
+          employeeRoleId: 3, employeeRoleName: 'Employee', designationId: 3, designationName: 'Software Engineer', isActive: 1
         },
         {
-          id: 5, employeeId: 1003, name: 'Gouri', phone: '8582928200', gender: 'Fem ale', password: 'password',
-          employeeRoleId: 4, employeeRoleName: 'Employee', designationId: 5, designationName: 'HR Manager', isActive: 0
+          id: 4, employeeId: 1004, name: 'Disha', phone: '7439151313', gender: 'Female', password: 'password',
+          employeeRoleId: 4, employeeRoleName: 'Employee', designationId: 4, designationName: 'Back Office', isActive: 1
+        },
+        {
+          id: 5, employeeId: 1005, name: 'Gouri', phone: '8582928200', gender: 'Fem ale', password: 'password',
+          employeeRoleId: 5, employeeRoleName: 'Employee', designationId: 5, designationName: 'HR Manager', isActive: 0
         }
       ]
     };

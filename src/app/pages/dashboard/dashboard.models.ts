@@ -5,15 +5,30 @@ export interface SummaryCounts {
   offlineVisits: number;
   forgotCheckout: number;
   totalOtherActivities: number;
-  otherVirtualMeetings: number;
+  lateArrivals: number;
   pendingLeaves: number;
 }
 
 export interface LateCheckout {
   userId: string;
-  UserName: string;
-  Gpid: string;
-  GpName: string;
+  userName: string;
+  checkInTime: string | null;
+  checkOutTime: string | null;
 }
 
 export type LateCheckoutApiResponse = APIResponse<{ Data: LateCheckout[], Count: number }>;
+
+export interface LateEmployeeSummary {
+  employeeId: string;
+  name: string;
+  designation: string;
+  totalLateDays: number;
+  averageLateDuration: string;
+}
+
+export interface LateArrival {
+  employeeId: string;
+  name: string;
+  date: string;
+  checkInTime: string;
+}

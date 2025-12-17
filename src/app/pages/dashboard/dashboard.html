@@ -32,90 +32,61 @@
 
   <!-- Summary Cards -->
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-    <!-- Online Visits -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
-      <div class="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center">
-        <i class="fas fa-wifi text-green-500 text-lg"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Online Visits</p>
-        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().onlineVisits }}</p>
-      </div>
-    </div>
-    <!-- Offline Visits -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
-      <div class="w-10 h-10 bg-yellow-100 dark:bg-yellow-900/40 rounded-full flex items-center justify-center">
-       </div>
-      <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Offline Visits</p>
-        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().offlineVisits }}</p>
-      </div>
-    </div>
-    <!-- Forgot Checkout -->
+    
+    <!-- Forgot Attendence -->
     <div (click)="openForgotCheckoutModal()" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow">
       <div class="w-10 h-10 bg-red-100 dark:bg-red-900/40 rounded-full flex items-center justify-center">
         <i class="fas fa-user-clock text-red-500 text-lg"></i>
       </div>
       <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Forgot Checkout</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Forgot Attendence</p>
         <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().forgotCheckout }}</p>
       </div>
     </div>
-    <!-- Virtual Meetings -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
-      <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center">
-        <i class="fas fa-video text-purple-500 text-lg"></i>
+    <!-- Late Arrivals -->
+    <div (click)="openLateArrivalsModal()" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition-shadow">
+      <div class="w-10 h-10 bg-orange-100 dark:bg-orange-900/40 rounded-full flex items-center justify-center">
+        <i class="fas fa-history text-orange-500 text-lg"></i>
       </div>
       <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Virtual Meetings</p>
-        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().otherVirtualMeetings }}</p>
-      </div>
-    </div>
-    <!-- Other Activities -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 flex items-center gap-3">
-      <div class="w-10 h-10 bg-cyan-100 dark:bg-cyan-900/40 rounded-full flex items-center justify-center">
-        <i class="fas fa-clipboard-list text-cyan-500 text-lg"></i>
-      </div>
-      <div>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Other Activities</p>
-        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().totalOtherActivities }}</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Late Arrivals</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">{{ isLoading() ? '...' : summaryCounts().lateArrivals }}</p>
       </div>
     </div>
   </div>
 
   <!-- Charts Section -->
   <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
-    <div
-      class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px]">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Daily Activity Summary (Last 7 Days)</h3>
-      <div id="gpVisitChart" class="w-full h-full">
-        <apx-chart *ngIf="gpVisitChartOptions"
-          [series]="gpVisitChartOptions.series"
-          [chart]="gpVisitChartOptions.chart"
-          [xaxis]="gpVisitChartOptions.xaxis"
-          [stroke]="gpVisitChartOptions.stroke"
-          [colors]="gpVisitChartOptions.colors"
-          [dataLabels]="gpVisitChartOptions.dataLabels"
-          [legend]="gpVisitChartOptions.legend"
-          [grid]="gpVisitChartOptions.grid"
-          [plotOptions]="gpVisitChartOptions.plotOptions"></apx-chart>
+    <!-- Late Attendance Report Table -->
+    <div class="col-span-1 xl:col-span-2 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px] flex flex-col">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-xl font-bold text-gray-900 dark:text-white">Monthly Late Attendance Report (After 10:30 AM)</h3>
+        <span class="text-sm text-gray-500 dark:text-gray-400">Current Month</span>
       </div>
-    </div>
-
-    <div
-      class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700/50 p-6 h-[450px]">
-      <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Other Activities & Virtual Meetings (Last 7 Days)</h3>
-      <div id="otherActivityChart" class="w-full h-full">
-        <apx-chart *ngIf="otherActivityChartOptions"
-          [series]="otherActivityChartOptions.series"
-          [chart]="otherActivityChartOptions.chart"
-          [xaxis]="otherActivityChartOptions.xaxis"
-          [stroke]="otherActivityChartOptions.stroke"
-          [colors]="otherActivityChartOptions.colors"
-          [dataLabels]="otherActivityChartOptions.dataLabels"
-          [legend]="otherActivityChartOptions.legend"
-          [grid]="otherActivityChartOptions.grid"
-          [plotOptions]="otherActivityChartOptions.plotOptions"></apx-chart>
+      
+      <div class="overflow-x-auto flex-1 scrollbar-elegant">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Designation</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Late Days</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Avg. Late Duration</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            @for(emp of lateEmployeesList(); track emp.employeeId) {
+              <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ emp.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ emp.designation }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300">{{ emp.totalLateDays }}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500 dark:text-gray-400">{{ emp.averageLateDuration }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -220,21 +191,84 @@
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                 User Name</th>
               <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                GP Name
+                Check-in Time
+              </th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                Check-out Time
               </th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             @for(item of forgotCheckoutList(); track item.userId){
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap">{{ item.UserName }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">{{ item.GpName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ item.userName }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                @if(item.checkInTime){
+                  {{ item.checkInTime }}
+                } @else {
+                  <span class="text-red-500 font-medium">Missing</span>
+                }
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                @if(item.checkOutTime){
+                  {{ item.checkOutTime }}
+                } @else {
+                  <span class="text-red-500 font-medium">Missing</span>
+                }
+              </td>
             </tr>
             }
           </tbody>
         </table>
         } @else {
         <p class="text-center text-gray-500 dark:text-gray-400">No users found who forgot to checkout.</p>
+        }
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Late Arrivals Modal -->
+  @if (showLateArrivalsModal()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" (click)="closeLateArrivalsModal()">
+    <div class="relative w-full max-w-2xl max-h-[90vh] bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+          Late Arrivals (After 10:30 AM)
+        </h3>
+        <button (click)="closeLateArrivalsModal()" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-red-500 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-700 dark:hover:text-red-500">
+          <i class="fas fa-times w-5 h-5"></i>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal Body -->
+      <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px);">
+        @if(isLoadingLateArrivalsModal()){
+        <div class="text-center">
+          <i class="fas fa-spinner fa-spin mr-2"></i> Loading late arrivals...
+        </div>
+        } @else if(lateArrivalsList().length > 0) {
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Employee Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Check-in Time</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            @for(item of lateArrivalsList(); track item.employeeId + item.date){
+            <tr>
+              <td class="px-6 py-4 whitespace-nowrap">{{ item.name }}</td>
+              <td class="px-6 py-4 whitespace-nowrap">{{ item.date | date:'mediumDate' }}</td>
+              <td class="px-6 py-4 whitespace-nowrap text-red-500 font-medium">{{ item.checkInTime }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+        } @else {
+        <p class="text-center text-gray-500 dark:text-gray-400">No late arrivals found for this month.</p>
         }
       </div>
     </div>
